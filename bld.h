@@ -73,17 +73,17 @@ extern "C" {
 } name, *p##name
 
 #define BLD_DA_EMPTY        { .capacity=0, .length=0, .buffer=NULL, }
-#define BLD_DA_FIRST(da)    (da).buffer[assert((da).length > 0), 0]
-#define BLD_DA_LAST(da)     (da).buffer[assert((da).length > 0), (da).length - 1]
-#define BLD_DA_GET(da, idx) (da).buffer[assert((da).length > (idx)), (idx)]
-#define BLD_DA_POP(da)      (da).buffer[assert((da).length > 0), --(da).length]
+#define BLD_DA_FIRST(da)    (da).buffer[BLD_ASSERT((da).length > 0), 0]
+#define BLD_DA_LAST(da)     (da).buffer[BLD_ASSERT((da).length > 0), (da).length - 1]
+#define BLD_DA_GET(da, idx) (da).buffer[BLD_ASSERT((da).length > (idx)), (idx)]
+#define BLD_DA_POP(da)      (da).buffer[BLD_ASSERT((da).length > 0), --(da).length]
 
 #define BLD_DA_FREE(da) do {                        \
-    free((da).buffer);                              \
+    BLD_FREE((da).buffer);                          \
     (da) = (typeof(da))BLD_DA_EMPTY;                \
 } while (0)
 
-#define BLD_DA_PUSH(da, it)         do {            \
+#define BLD_DA_PUSH(da, it) do {                    \
     BLD_DA_ALLOCATE(da, (da).length + 1);           \
     (da).buffer[(da).length++] = (it);              \
 } while (0)
@@ -102,7 +102,7 @@ extern "C" {
         while ((da).capacity < (len)) {             \
             (da).capacity *= 2;                     \
         }                                           \
-        (da).buffer = realloc(                      \
+        (da).buffer = BLD_REALLOC(                  \
             (da).buffer,                            \
             (da).capacity * sizeof(*(da).buffer)    \
         );                                          \
