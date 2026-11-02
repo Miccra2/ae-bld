@@ -14,8 +14,8 @@ extern "C" {
 #include <time.h>
 #include <stdio.h>
 #include <errno.h>
+#include <ctype.h>
 #include <limits.h>
-#include <ctypes.h>
 #include <stdint.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -128,7 +128,6 @@ BLD_DEF bool bld_text_ends(BLD_FileInfo *file_info, char *cursor, ssize_t offset
 #ifdef BLD_IMPL
 
 BLD_DEF BLD_FileInfo bld_read_entire_file(const char *path) {
-    assert(buffer != NULL);
     FILE *pf = fopen(path, "r");
     if (!pf) {
         BLD_FMT_ERROR("%s: Could not open file!", path);
@@ -144,7 +143,7 @@ BLD_DEF BLD_FileInfo bld_read_entire_file(const char *path) {
     rewind(pf);
     fread(buffer, 1, size, pf);
     fclose(pf);
-    return (BLD_FileInfo){ .path=path, .text=buffer, .eof=(buffer+size), .pf=NULL, };
+    return (BLD_FileInfo){ .path=(char*)path, .text=buffer, .eof=(buffer+size), .pf=NULL, };
 }
 
 BLD_DEF bool bld_text_ends(BLD_FileInfo *file_info, char *cursor, ssize_t offset) {
